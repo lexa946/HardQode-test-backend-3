@@ -112,7 +112,6 @@ class CourseViewSet(viewsets.ModelViewSet):
             )
 
         user.balance.bonuses -= course.price
-        user.subscription.courses.add(course)
         if not user.group:
             groups = Group.objects.all()
             groups = [group for group in groups if group.count_users < group.max_users_count] # Отфильтровываем заполненные группы
@@ -124,6 +123,7 @@ class CourseViewSet(viewsets.ModelViewSet):
                 if min_count_user_group.count_users > group.count_users:
                     min_count_user_group = group
             user.group = min_count_user_group
+        user.subscription.courses.add(course)
         user.save()
         return Response(data={"Status": "success", "Detail": "Курс добавлен!"},
                         status=status.HTTP_201_CREATED)
